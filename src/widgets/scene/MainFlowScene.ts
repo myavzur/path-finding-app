@@ -1,4 +1,6 @@
+import { SceneConnector } from "@/entities/SceneConnector";
 import { HousePainter } from "@/features/HousePainter";
+import { PathPainter } from "@/features/PathPainter";
 import { IActionScene } from "@/shared/interfaces";
 import { Group, Mesh, Object3D, Raycaster, Vector2 } from "three";
 import { GLTF } from "three/examples/jsm/Addons.js";
@@ -8,27 +10,37 @@ export class MainFlowScene {
 	readonly assetMap: Map<string, GLTF>;
 	readonly raycaster: Raycaster = new Raycaster();
 
+	private sceneConnector = new SceneConnector();
 	private housePainter: HousePainter | null = null;
+	// @ts-expect-error sifd
+	private pathPainter: PathPainter | null = null;
 
 	constructor(actionScene: IActionScene, assetMap: Map<string, GLTF>) {
 		this.actionScene = actionScene;
 		this.assetMap = assetMap;
+
+		this.sceneConnector.getPointerPosition = this.getPointerPosition.bind(this);
+		this.sceneConnector.getIntersectWithGround = this.getIntersectWithGround.bind(this);
+		this.sceneConnector.getIntersectWithScene = this.getIntersectWithScene.bind(this);
+		this.sceneConnector.addMeshToScene = this.addMeshToScene.bind(this);
+		this.sceneConnector.removeMeshFromScene = this.removeMeshFromScene.bind(this);
 	}
 
 	async start() {
-		this.housePainter = new HousePainter(this.assetMap);
-		this.housePainter.getPointerPosition = this.getPointerPosition.bind(this);
-		this.housePainter.getIntersectWithGround =
-			this.getIntersectWithGround.bind(this);
-		this.housePainter.addElementToScene = this.addElementToScene.bind(this);
+		this.housePainter = new HousePainter(this.sceneConnector, this.assetMap);
+		this.pathPainter = new PathPainter(this.sceneConnector);
 	}
 
 	mountDraftHouseOnScene(title: string) {
 		this.housePainter?.mountDraftHouseOnScene(title);
 	}
 
-	private addElementToScene(element: Object3D | Group | Mesh) {
+	private addMeshToScene(element: Object3D | Group | Mesh) {
 		this.actionScene.scene.add(element);
+	}
+
+	private removeMeshFromScene(element: Object3D | Group | Mesh) {
+		this.actionScene.scene.remove(element);
 	}
 
 	private getPointerPosition(event: PointerEvent | MouseEvent) {
@@ -46,5 +58,10 @@ export class MainFlowScene {
 	private getIntersectWithGround(pointer: Vector2) {
 		this.raycaster.setFromCamera(pointer, this.actionScene.camera);
 		return this.raycaster.intersectObject(this.actionScene.ground)[0];
+	}
+
+	private getIntersectWithScene(pointer: Vector2) {
+		this.raycaster.setFromCamera(pointer, this.actionScene.camera);
+		return this.raycaster.intersectObjects(this.actionScene.scene.children, true);
 	}
 }
