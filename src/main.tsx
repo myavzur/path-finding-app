@@ -10,7 +10,7 @@ import { MainFlowScene } from "./widgets/scene/MainFlowScene";
 const scene = new InitScene();
 scene.start();
 
-// @ts-ignore
+// @ts-expect-error - Just for debug. No errors. Just to shut typescript for a moment
 window.scene = scene;
 
 const assetScene = new LoadAssetsScene();
@@ -21,7 +21,7 @@ mainFlowScene.start();
 
 const root = createRoot(document.getElementById("root")!);
 root.render(
-  <>
-    <HouseMenu scene={mainFlowScene} />
-  </>
+	<>
+		<HouseMenu scene={mainFlowScene} />
+	</>
 );

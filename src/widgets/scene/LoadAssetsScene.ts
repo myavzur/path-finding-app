@@ -5,9 +5,7 @@ export class LoadAssetsScene {
 	private loader: GLTFLoader = new GLTFLoader();
 	readonly assetMap = new Map<string, GLTF>();
 
-	constructor() {
-
-	}
+	constructor() {}
 
 	async start() {
 		for (const asset of assetsConfig) {

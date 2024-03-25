@@ -14,12 +14,12 @@ export class House {
 
 	/** Sets opacity for children in mesh */
 	setOpacity(opacity: number) {
-		this.mesh.traverse((child) => {
-				if (child instanceof Mesh) {
-					// Может быть прозрачным
-					child.material.transparent = true;
-					child.material.opacity = opacity;
-				}
+		this.mesh.traverse(child => {
+			if (child instanceof Mesh) {
+				// Может быть прозрачным
+				child.material.transparent = true;
+				child.material.opacity = opacity;
+			}
 		});
 	}
 
@@ -28,7 +28,7 @@ export class House {
 	}
 
 	private cloneMaterials() {
-		this.mesh.traverse((child) => {
+		this.mesh.traverse(child => {
 			if (child instanceof Mesh) {
 				// Может быть прозрачным
 				child.material = child.material.clone();

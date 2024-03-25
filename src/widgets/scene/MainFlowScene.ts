@@ -10,7 +10,6 @@ export class MainFlowScene {
 
 	private housePainter: HousePainter | null = null;
 
-
 	constructor(actionScene: IActionScene, assetMap: Map<string, GLTF>) {
 		this.actionScene = actionScene;
 		this.assetMap = assetMap;
@@ -19,7 +18,8 @@ export class MainFlowScene {
 	async start() {
 		this.housePainter = new HousePainter(this.assetMap);
 		this.housePainter.getPointerPosition = this.getPointerPosition.bind(this);
-		this.housePainter.getIntersectWithGround = this.getIntersectWithGround.bind(this);
+		this.housePainter.getIntersectWithGround =
+			this.getIntersectWithGround.bind(this);
 		this.housePainter.addElementToScene = this.addElementToScene.bind(this);
 	}
 
@@ -35,10 +35,12 @@ export class MainFlowScene {
 		const pointer = new Vector2();
 
 		// From: https://github.com/mrdoob/three.js/blob/ef80ac74e6716a50104a57d8add6c8a950bff8d7/examples/webgl_geometry_terrain_raycast.html#L243
-    pointer.x = (event.clientX / this.actionScene.renderer.domElement.clientWidth) * 2 - 1;
-    pointer.y = -(event.clientY / this.actionScene.renderer.domElement.clientHeight) * 2 + 1;
+		pointer.x =
+			(event.clientX / this.actionScene.renderer.domElement.clientWidth) * 2 - 1;
+		pointer.y =
+			-(event.clientY / this.actionScene.renderer.domElement.clientHeight) * 2 + 1;
 
-    return pointer;
+		return pointer;
 	}
 
 	private getIntersectWithGround(pointer: Vector2) {

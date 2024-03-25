@@ -7,7 +7,7 @@ export interface IActionScene {
 	readonly camera: PerspectiveCamera;
 	readonly renderer: WebGLRenderer;
 	readonly ground: Ground;
-  readonly orbitControls: OrbitControls;
+	readonly orbitControls: OrbitControls;
 
 	start(): Promise<void>;
 }
