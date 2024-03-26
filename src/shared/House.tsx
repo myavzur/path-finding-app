@@ -3,21 +3,28 @@ import { Group, Mesh, Vector3 } from "three";
 import { v4 as uuidv4 } from "uuid";
 import { HouseLabel } from "./HouseLabel/HouseLabel";
 import { CSS2DObject } from "three/examples/jsm/Addons.js";
+import { assetsConfig } from "./constants/assets-config";
 
 export class House {
 	readonly id: string;
 	readonly mesh: Group;
-	isMounted: boolean = false;
+	readonly assetConfig: (typeof assetsConfig)[number];
+	isMounted = false;
+	address = "";
 
 	onSaveHouse: () => void = () => null;
 
-	constructor(mesh: Group) {
-		this.id = uuidv4();
+	constructor(mesh: Group, assetConfig: (typeof assetsConfig)[number], id?: string) {
+		this.id = id || uuidv4();
 		this.mesh = mesh;
+		this.assetConfig = assetConfig;
 
 		this.attachMeshes();
-		this.createHouseLabel();
 	}
+
+	handleChangeHouseAddress = (address: string) => {
+		this.address = address;
+	};
 
 	saveHouse = () => {
 		this.isMounted = true;
@@ -39,14 +46,16 @@ export class House {
 		this.mesh.position.copy(vector);
 	}
 
-	private createHouseLabel() {
+	createHouseLabel() {
 		const labelContainerEl = document.createElement("div");
 
 		const root = createRoot(labelContainerEl);
 		root.render(
 			<HouseLabel
+				defaultAddress={this.address}
 				isMounted={this.isMounted}
 				onSave={this.saveHouse}
+				onChangeAddress={this.handleChangeHouseAddress}
 			/>
 		);
 

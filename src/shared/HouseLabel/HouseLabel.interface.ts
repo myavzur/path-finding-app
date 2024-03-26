@@ -1,4 +1,6 @@
 export interface HouseLabelProps {
-	onSave: () => void;
+	defaultAddress?: string;
 	isMounted?: boolean;
+	onSave: () => void;
+	onChangeAddress?: (address: string) => void;
 }

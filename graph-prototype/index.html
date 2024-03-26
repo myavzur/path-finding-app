@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Graphs</title>
+</head>
+<body style="margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden;">
+	<img src="graph-diag.png" style="width: 100%; height: 100%; object-fit: contain;"/>
+
+	<script>
+		class Node {
+			// Для избежания дублирования чилдренов (н-р добавили два раза одну и тот же узел B в узел A)
+			children = new Set();
+
+			constructor(value) {
+				this.value = value;
+			}
+		}
+
+		class Graph {
+			map = new Map();
+
+			addChildren(node1, node2) {
+				node1.children.add(node2)
+
+				this.map.set(node1.value, node1);
+				this.map.set(node2.value, node2);
+			}
+
+			getAllPaths(fromNode = new Node(), toNode = new Node()) {
+				const record = []; // matrix [][]
+				this.findPathsDFS(fromNode, toNode, new Set([fromNode]), record);
+				return record;
+			}
+
+			// Deep-first Search (DFS)
+			findPathsDFS(
+				fromNode = new Node(),
+				toNode = new Node(),
+				visitedNodes = new Set(), // Если Node лежит в этом множестве, значит мы уже посещали ее, добавлять в record не надо!
+				recordPaths = []
+			) {
+				/*
+				1. Рекурсия для первой ветви от A через
+					fromNode = A,
+					toNode = F,
+					visitedNodes = [A],
+					recordPaths = []
+
+				2.
+					fromNode = B,
+					toNode = F,
+					visitedNodes = [A, B],
+					recordPaths = []
+
+				3.
+					fromNode = E,
+					toNode = F,
+					visitedPaths = [A, B, E]
+					recordPaths = []
+
+				4.
+					fromNode = F,
+					toNode = F, // fromNode === toNode => записываем путь, удалем ноду F из посещенных и выходим из цикла.
+					visitedPaths = [A, B, E, F]
+					recordPaths = [[A, B, E, F]]
+
+				1.1
+					fromNode = A,
+					toNode = F,
+					visitedPaths = [A].
+					recordPaths = [[A, B, E, F]]
+
+				1.2
+					fromNode = C,
+					toNode = F,
+					visitedPaths = [A, C]
+					recordPaths = [[A, B, E, F]]
+
+				1.3
+					fromNode = F,
+					toNode = F,
+					visitedPaths = [A, C, F]
+					recordPaths = [[A, B, E, F], [A, C, F]]
+				*/
+				if (fromNode === toNode) {
+					recordPaths.push([...visitedNodes]);
+					visitedNodes.delete(fromNode);
+					return;
+				}
+
+				const children = fromNode.children;
+
+				for (const child of children) {
+					const isChildNodeVisited = visitedNodes.has(child);
+					if (isChildNodeVisited) continue;
+
+					visitedNodes.add(child);
+
+					this.findPathsDFS(child, toNode, visitedNodes, recordPaths);
+				}
+
+				visitedNodes.delete(fromNode);
+			}
+		}
+
+		const A = new Node("A");
+		const B = new Node("B");
+		const C = new Node("C");
+		const D = new Node("D");
+		const E = new Node("E");
+		const F = new Node("F");
+		const K = new Node("K");
+
+		const graph = new Graph();
+
+		graph.addChildren(A, B);
+		graph.addChildren(A, C);
+		graph.addChildren(A, D);
+
+		graph.addChildren(B, E);
+
+		graph.addChildren(C, D);
+		graph.addChildren(C, F);
+		graph.addChildren(C, K);
+
+		graph.addChildren(E, F);
+	</script>
+</body>
+</html>

@@ -1,10 +1,12 @@
-import { Button } from "antd";
+import { Button, Input } from "antd";
 import { HouseLabelProps } from "./HouseLabel.interface";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 export const HouseLabel: React.FC<HouseLabelProps> = ({
+	defaultAddress = "",
+	isMounted: defaultMounted = false,
 	onSave,
-	isMounted: defaultMounted = false
+	onChangeAddress
 }) => {
 	const [isMounted, setMounted] = useState(defaultMounted);
 
@@ -13,9 +15,18 @@ export const HouseLabel: React.FC<HouseLabelProps> = ({
 		onSave();
 	};
 
+	const handleChangeAddress = (e: ChangeEvent<HTMLInputElement>) => {
+		onChangeAddress?.(e.target.value);
+	};
+
 	return (
 		<div>
-			<h1>House Label</h1>
+			<Input
+				defaultValue={defaultAddress}
+				placeholder="Адрес"
+				disabled={isMounted}
+				onChange={handleChangeAddress}
+			/>
 			<Button
 				disabled={isMounted}
 				onPointerDown={handleSave}

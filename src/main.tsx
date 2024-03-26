@@ -6,22 +6,27 @@ import "./index.css";
 import { InitScene } from "./widgets/scene/InitScene";
 import { LoadAssetsScene } from "./widgets/scene/LoadAssetsScene";
 import { MainFlowScene } from "./widgets/scene/MainFlowScene";
+import { IndexDB } from "../IndexDB";
 
-const scene = new InitScene();
-scene.start();
+const indexDB = new IndexDB();
 
-// @ts-expect-error - Just for debug. No errors. Just to shut typescript for a moment
-window.scene = scene;
+indexDB.onSuccessOpened = async () => {
+	const scene = new InitScene();
+	scene.start();
 
-const assetScene = new LoadAssetsScene();
-assetScene.start();
+	// @ts-expect-error - Just for debug. No errors. Just to shut typescript for a moment
+	window.scene = scene;
 
-const mainFlowScene = new MainFlowScene(scene, assetScene.assetMap);
-mainFlowScene.start();
+	const assetScene = new LoadAssetsScene();
+	await assetScene.start(); // Дожидаемся загрузки асетов
 
-const root = createRoot(document.getElementById("root")!);
-root.render(
-	<>
-		<HouseMenu scene={mainFlowScene} />
-	</>
-);
+	const mainFlowScene = new MainFlowScene(scene, assetScene.assetMap);
+	mainFlowScene.start();
+
+	const root = createRoot(document.getElementById("root")!);
+	root.render(
+		<>
+			<HouseMenu scene={mainFlowScene} />
+		</>
+	);
+};

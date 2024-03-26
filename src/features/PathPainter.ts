@@ -1,10 +1,14 @@
 import { SceneConnector } from "@/entities/SceneConnector";
+import { Graph, Node } from "@/shared/Graph";
 import { House } from "@/shared/House";
 import { PathLine } from "@/shared/PathLine";
 import { Vector2 } from "three";
 
 export class PathPainter {
 	private pathLineFrom: PathLine | null = null;
+	private houseFrom: House | null = null;
+
+	housePathGraph = new Graph();
 
 	constructor(private sceneConnector: SceneConnector) {
 		window.addEventListener("dblclick", this.handleWindowDoubleClick);
@@ -62,6 +66,7 @@ export class PathPainter {
 			0,
 			house.mesh.position.z
 		];
+		this.houseFrom = house;
 
 		this.pathLineFrom.setFromTo(
 			[house.mesh.position.x, 0, house.mesh.position.z],
@@ -73,8 +78,19 @@ export class PathPainter {
 		this.sceneConnector.addMeshToScene?.(this.pathLineFrom);
 	}
 
+	private savePathToGraph(houseFrom: House, houseTo: House) {
+		const nodeMap = this.housePathGraph.map;
+
+		const nodeFrom = nodeMap.get(houseFrom.id) || new Node(houseFrom.id);
+		const nodeTo = nodeMap.get(houseTo.id) || new Node(houseTo.id);
+
+		this.housePathGraph.addChildren(nodeFrom, nodeTo);
+	}
+
 	private finishMountPathLine(house: House) {
-		if (!this.pathLineFrom) throw new Error("Path didn't started");
+		if (!this.pathLineFrom || !this.houseFrom) {
+			throw new Error("From Path or House wasn't specified.");
+		}
 
 		// TODO: fix types with pathLineFrom.userData.fromPoint
 		const fromPoint = this.pathLineFrom.userData.fromPoint as [
@@ -88,8 +104,14 @@ export class PathPainter {
 			number
 		];
 
+		// Сохраняем связь домиков в виде графа.
+		const houseFrom = this.houseFrom;
+		const houseTo = house;
+		this.savePathToGraph(houseFrom, houseTo);
+
 		this.pathLineFrom.setFromTo(fromPoint, toPoint);
 		this.pathLineFrom = null;
+		this.houseFrom = null;
 	}
 
 	private aimPathLine(pointer: Vector2) {
