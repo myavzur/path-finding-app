@@ -7,6 +7,7 @@ import { InitScene } from "./widgets/scene/InitScene";
 import { LoadAssetsScene } from "./widgets/scene/LoadAssetsScene";
 import { MainFlowScene } from "./widgets/scene/MainFlowScene";
 import { IndexDB } from "../IndexDB";
+import { FindPathMenu } from "./features/find-path-menu";
 
 const indexDB = new IndexDB();
 
@@ -27,6 +28,10 @@ indexDB.onSuccessOpened = async () => {
 	root.render(
 		<>
 			<HouseMenu scene={mainFlowScene} />
+			<FindPathMenu
+				database={indexDB}
+				pathPainter={mainFlowScene.pathPainter}
+			/>
 		</>
 	);
 };

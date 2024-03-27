@@ -24,6 +24,7 @@ export class House {
 
 	handleChangeHouseAddress = (address: string) => {
 		this.address = address;
+		console.log("handleChangeHouseAddress :>> ", this.address);
 	};
 
 	saveHouse = () => {
@@ -46,13 +47,13 @@ export class House {
 		this.mesh.position.copy(vector);
 	}
 
-	createHouseLabel() {
+	createHouseLabel(label: string) {
 		const labelContainerEl = document.createElement("div");
 
 		const root = createRoot(labelContainerEl);
 		root.render(
 			<HouseLabel
-				defaultAddress={this.address}
+				defaultAddress={label}
 				isMounted={this.isMounted}
 				onSave={this.saveHouse}
 				onChangeAddress={this.handleChangeHouseAddress}

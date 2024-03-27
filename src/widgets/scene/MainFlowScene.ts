@@ -13,8 +13,7 @@ export class MainFlowScene {
 
 	private sceneConnector = new SceneConnector();
 	private housePainter: HousePainter | null = null;
-	// @ts-expect-error sifd
-	private pathPainter: PathPainter | null = null;
+	pathPainter: PathPainter | null = null;
 
 	constructor(actionScene: IActionScene, assetMap: Map<string, GLTF>) {
 		this.actionScene = actionScene;

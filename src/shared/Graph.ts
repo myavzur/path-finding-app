@@ -1,4 +1,5 @@
 export class Node {
+	/** В рамках данного приложения Node.id === House.id */
 	readonly id: string;
 	readonly children: Set<Node>;
 

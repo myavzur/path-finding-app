@@ -41,21 +41,19 @@ export class HousePainter {
 		if (!house) return;
 
 		house.setOpacity(0.5);
+		house.address = house.assetConfig.speech; // Устанавливаем значение по умолчанию.
 		house.onSaveHouse = this.handleSaveHouse;
 
 		this.draftHouse = house;
 
 		this.sceneConnector.addMeshToScene?.(house.mesh);
 
-		house.createHouseLabel();
+		house.createHouseLabel(house.assetConfig.speech);
 	}
 
 	saveHouse(house: House) {
 		house.setOpacity(1);
 		house.isMounted = true;
-
-		console.log("saveHouseInfo HousePainter");
-		console.log(this.indexDB);
 
 		this.indexDB.saveHouseInfo({
 			id: house.id,
@@ -72,8 +70,6 @@ export class HousePainter {
 		if (!houseGLTF || !assetConfig) return;
 
 		const houseMesh = houseGLTF.scene.clone(true);
-
-		console.log("houseMesh :>> ", houseMesh);
 		return new House(houseMesh, assetConfig, id);
 	}
 
@@ -90,7 +86,7 @@ export class HousePainter {
 
 			house.isMounted = true;
 
-			house.createHouseLabel();
+			house.createHouseLabel(house.assetConfig.speech);
 		}
 	}
 }
