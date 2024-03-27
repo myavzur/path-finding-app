@@ -2,7 +2,7 @@ import { IndexDB } from '../../IndexDB';
 
 import { SceneConnector } from "@/entities/SceneConnector";
 import { House } from "@/shared/House";
-import { assetsConfig } from '@/shared/constants/assets-config';
+import { AssetTitle, assetsConfig } from '@/shared/constants/assets-config';
 import { GLTF } from "three/examples/jsm/Addons.js";
 
 export class HousePainter {
@@ -35,7 +35,7 @@ export class HousePainter {
 		this.draftHouse = null;
 	};
 
-	mountDraftHouseOnScene(assetTitle: string) {
+	mountDraftHouseOnScene(assetTitle: AssetTitle) {
 		console.log("assetTitle :>> ", assetTitle);
 		const house = this.createHouseByAssetTitle(assetTitle);
 		if (!house) return;
@@ -54,6 +54,9 @@ export class HousePainter {
 		house.setOpacity(1);
 		house.isMounted = true;
 
+		console.log("saveHouseInfo HousePainter");
+		console.log(this.indexDB);
+
 		this.indexDB.saveHouseInfo({
 			id: house.id,
 			positionX: house.mesh.position.x,
@@ -63,7 +66,7 @@ export class HousePainter {
 		});
 	}
 
-	private createHouseByAssetTitle(assetTitle: string, id?: string) {
+	private createHouseByAssetTitle(assetTitle: AssetTitle, id?: string) {
 		const houseGLTF = this.assetMap.get(assetTitle);
 		const assetConfig = assetsConfig.find(asset => asset.title === assetTitle);
 		if (!houseGLTF || !assetConfig) return;

@@ -1,18 +1,19 @@
 import React from "react";
 import { Button } from "antd";
 import { HouseMenuProps } from "./HouseMenu.interaface";
+import { AssetTitle } from "@/shared/constants/assets-config";
 
 export const HouseMenu: React.FC<HouseMenuProps> = ({ scene }) => {
-	const handleClick = (title: string) => {
-		scene.mountDraftHouseOnScene(title);
+	const handleClick = (assetTitle: AssetTitle) => {
+		scene.mountDraftHouseOnScene(assetTitle);
 	};
 
 	return (
 		<ul className="houses-menu">
-			<Button onClick={() => handleClick("castle")}>Замок</Button>
-			<Button onClick={() => handleClick("pizzashop")}>Пиццерия</Button>
-			<Button onClick={() => handleClick("shack")}>Лачуга</Button>
-			<Button onClick={() => handleClick("woodhouse")}>Изба</Button>
+			<Button onClick={() => handleClick(AssetTitle.CASTLE)}>Замок</Button>
+			<Button onClick={() => handleClick(AssetTitle.PIZZA_SHOP)}>Пиццерия</Button>
+			<Button onClick={() => handleClick(AssetTitle.SHACK)}>Лачуга</Button>
+			<Button onClick={() => handleClick(AssetTitle.WOOD_HOUSE)}>Изба</Button>
 		</ul>
 	);
 };

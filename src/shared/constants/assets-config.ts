@@ -1,18 +1,30 @@
-export const assetsConfig = [
+export enum AssetTitle {
+	CASTLE = "castle",
+	PIZZA_SHOP = "pizzashop",
+	SHACK = "shack",
+	WOOD_HOUSE = "woodhouse"
+}
+
+interface IAssetConfig {
+	title: AssetTitle;
+	path: string;
+}
+
+export const assetsConfig: IAssetConfig[] = [
 	{
-		title: "castle",
+		title: AssetTitle.CASTLE,
 		path: "/castle.glb"
 	},
 	{
-		title: "pizzashop",
+		title: AssetTitle.PIZZA_SHOP,
 		path: "/pizzashop.glb"
 	},
 	{
-		title: "shack",
+		title: AssetTitle.SHACK,
 		path: "/shack.glb"
 	},
 	{
-		title: "woodhouse",
+		title: AssetTitle.WOOD_HOUSE,
 		path: "/woodhouse.glb"
 	}
 ];

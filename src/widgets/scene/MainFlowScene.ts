@@ -1,6 +1,7 @@
 import { SceneConnector } from "@/entities/SceneConnector";
 import { HousePainter } from "@/features/HousePainter";
 import { PathPainter } from "@/features/PathPainter";
+import { AssetTitle } from "@/shared/constants/assets-config";
 import { IActionScene } from "@/shared/interfaces";
 import { Group, Mesh, Object3D, Raycaster, Vector2 } from "three";
 import { GLTF } from "three/examples/jsm/Addons.js";
@@ -31,8 +32,8 @@ export class MainFlowScene {
 		this.pathPainter = new PathPainter(this.sceneConnector);
 	}
 
-	mountDraftHouseOnScene(title: string) {
-		this.housePainter?.mountDraftHouseOnScene(title);
+	mountDraftHouseOnScene(assetTitle: AssetTitle) {
+		this.housePainter?.mountDraftHouseOnScene(assetTitle);
 	}
 
 	private addMeshToScene(element: Object3D | Group | Mesh) {

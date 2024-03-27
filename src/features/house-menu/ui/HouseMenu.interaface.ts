@@ -1,6 +1,8 @@
+import { AssetTitle } from "@/shared/constants/assets-config";
+
 export interface HouseMenuProps {
 	scene: {
 		// `mouseDraftHouseOnScene` method is required in scene!
-		mountDraftHouseOnScene: (title: string) => void;
+		mountDraftHouseOnScene: (assetTitle: AssetTitle) => void;
 	};
 }

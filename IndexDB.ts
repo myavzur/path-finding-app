@@ -1,10 +1,11 @@
+import { AssetTitle } from "@/shared/constants/assets-config";
 import { Graph } from "./src/shared/Graph";
 
 export type HouseTableColumns = {
 	id: string;
 	positionX: number;
 	positionZ: number;
-	assetTitle: string;
+	assetTitle: AssetTitle;
 	houseAddress: string;
 };
 
@@ -18,7 +19,7 @@ export class IndexDB {
 	static _INSTANCE: IndexDB | null = null;
 
 	private DATABASE_NAME = "house";
-	private VERSION = 1;
+	private VERSION = 2;
 
 	private openRequest!: IDBOpenDBRequest;
 	private database: IDBDatabase | null = null;
@@ -34,21 +35,22 @@ export class IndexDB {
 			IndexDB._INSTANCE = this;
 			return;
 		}
-		return;
+
+		return IndexDB._INSTANCE;
 	}
 
 	private handleUpgradeNeeded = () => {
-		const db = this.openRequest.result;
+		const database = this.openRequest.result;
 
-		if (!db.objectStoreNames.contains("houses")) {
-			db.createObjectStore("houses", { keyPath: "id" });
+		if (!database.objectStoreNames.contains("houses")) {
+			database.createObjectStore("houses", { keyPath: "id" });
 		}
 
-		if (!db.objectStoreNames.contains("housesPaths")) {
-			db.createObjectStore("housesPaths");
+		if (!database.objectStoreNames.contains("housesPaths")) {
+			database.createObjectStore("housesPaths");
 		}
 
-		this.database = db;
+		this.database = database;
 	};
 
 	private handleSuccessOpened = () => {
