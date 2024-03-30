@@ -1,6 +1,13 @@
-import { Button, Input } from "antd";
+import { Form, Button, Input, Spin, Typography } from "antd";
 import { HouseLabelProps } from "./HouseLabel.interface";
 import { ChangeEvent, useState } from "react";
+
+import "./HouseLabel.css";
+import { House } from "../House";
+import { IndexDB } from "../../../IndexDB";
+import { useDebouncedFunction } from "../hooks";
+
+import cn from "classnames";
 
 export const HouseLabel: React.FC<HouseLabelProps> = ({
 	defaultAddress = "",
@@ -9,30 +16,82 @@ export const HouseLabel: React.FC<HouseLabelProps> = ({
 	onChangeAddress
 }) => {
 	const [isMounted, setMounted] = useState(defaultMounted);
+	const [isLoading, setLoading] = useState(false);
+	const [address, setAddress] = useState(defaultAddress);
+	const [error, setError] = useState<string | null>(null);
 
-	const handleSave = () => {
-		setMounted(true);
+	const checkIsAddressUnique = useDebouncedFunction(
+		async (address: House["address"]) => {
+			const database = new IndexDB();
+
+			const houses = await database.getAllHousesInfo();
+
+			const isAddressTaken = houses.some(house => house.address === address);
+
+			if (isAddressTaken) {
+				setError("Адрес уже занят");
+				setLoading(false);
+				return;
+			}
+
+			setError(null);
+			setLoading(false);
+		},
+		300
+	);
+
+	const handleSaveHouse = () => {
+		if (error) return;
+
+		if (!address.trim()) {
+			setError("Адрес не может быть пустым");
+			return;
+		}
+
 		onSave();
+		setMounted(true);
 	};
 
 	const handleChangeAddress = (e: ChangeEvent<HTMLInputElement>) => {
-		onChangeAddress?.(e.target.value);
+		setLoading(true);
+
+		const address = e.target.value.trim();
+
+		setAddress(address);
+		checkIsAddressUnique(address);
+		onChangeAddress(address);
 	};
 
-	return (
-		<div>
-			<Input
-				defaultValue={defaultAddress}
-				placeholder="Адрес"
-				disabled={isMounted}
-				onChange={handleChangeAddress}
-			/>
+	return isMounted ? (
+		<Typography.Paragraph className="house-label">{address}</Typography.Paragraph>
+	) : (
+		<Form
+			className="form"
+			onFinish={handleSaveHouse}
+		>
+			<Form.Item
+				className="input-house-address-container"
+				rules={[{ required: true }]}
+			>
+				<Input
+					disabled={isMounted}
+					className={cn("input-house-address")}
+					placeholder="Адрес"
+					value={address}
+					status={error ? "error" : ""}
+					onChange={handleChangeAddress}
+					suffix={isLoading ? <Spin size="small" /> : null}
+				/>
+				{error && <div className="ant-form-item-explain-error">{error}</div>}
+			</Form.Item>
+
 			<Button
-				disabled={isMounted}
-				onPointerDown={handleSave}
+				disabled={isLoading || Boolean(error)}
+				htmlType="submit"
+				onPointerDown={handleSaveHouse}
 			>
 				Сохранить
 			</Button>
-		</div>
+		</Form>
 	);
 };

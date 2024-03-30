@@ -3,16 +3,18 @@ import { Graph, Node } from "@/shared/Graph";
 import { House } from "@/shared/House";
 import { PathLine } from "@/shared/PathLine";
 import { Vector2 } from "three";
-import { HouseTableColumns, IndexDB } from "../../IndexDB";
-import { PathLinesMap } from "@/entities/PathLinesMap";
+import { IHouseTableCols, IndexDB } from "../../IndexDB";
+import { PathsMap } from "@/entities/PathsMap";
+import { PathColor } from "@/shared/constants";
 
 export class PathPainter {
-	private pathLineFrom: PathLine | null = null;
-	private houseFrom: House | null = null;
 	private indexDB = new IndexDB();
 
-	pathLinesMap = new PathLinesMap();
-	housesPathsGraph = new Graph();
+	private pathLineFrom: PathLine | null = null;
+	private houseFrom: House | null = null;
+
+	pathsMap = new PathsMap();
+	pathsGraph = new Graph();
 
 	constructor(private sceneConnector: SceneConnector) {
 		window.addEventListener("dblclick", this.handleWindowDoubleClick);
@@ -20,12 +22,22 @@ export class PathPainter {
 		this.mountPathsFromIndexDb();
 	}
 
-	/** Removes started line from scene if `Escape` button was pressed. */
+	highlightPath(
+		houseFromId: House["id"],
+		houseToId: House["id"],
+		color: PathColor = PathColor.DEFAULT
+	) {
+		const pathLine = this.pathsMap.getPathLine(houseFromId, houseToId);
+		pathLine?.setColor(color);
+	}
+
+	/** Removes started line from scene if `Esc` button was pressed. */
 	private handleWindowKeyDown = (e: KeyboardEvent) => {
 		if (e.key === "Escape" && this.pathLineFrom) {
 			this.sceneConnector.removeMeshFromScene?.(this.pathLineFrom);
 			this.pathLineFrom = null;
 		}
+
 		window.removeEventListener("keydown", this.handleWindowKeyDown);
 	};
 
@@ -82,12 +94,12 @@ export class PathPainter {
 	}
 
 	private savePathToGraph(houseFrom: House, houseTo: House) {
-		const nodeMap = this.housesPathsGraph.map;
+		const nodeMap = this.pathsGraph.map;
 
 		const nodeFrom = nodeMap.get(houseFrom.id) || new Node(houseFrom.id);
 		const nodeTo = nodeMap.get(houseTo.id) || new Node(houseTo.id);
 
-		this.housesPathsGraph.addChildren(nodeFrom, nodeTo);
+		this.pathsGraph.addChildren(nodeFrom, nodeTo);
 	}
 
 	private finishMountPathLine(house: House) {
@@ -114,14 +126,14 @@ export class PathPainter {
 
 		/** Граф у нас двунаправленный. Поэтому для избежания
 		 * дубликатов линий между домиками на сцене - удаляем линию и создаем по новой.*/
-		if (this.pathLinesMap.hasPathLine(houseFrom.id, houseTo.id)) {
+		if (this.pathsMap.hasPathLine(houseFrom.id, houseTo.id)) {
 			this.sceneConnector.removeMeshFromScene?.(this.pathLineFrom);
 			return;
 		}
 
-		this.pathLinesMap.setPathLine(houseFrom.id, houseTo.id, this.pathLineFrom);
+		this.pathsMap.setPathLine(houseFrom.id, houseTo.id, this.pathLineFrom);
 		this.savePathToGraph(houseFrom, houseTo);
-		this.indexDB.saveHousesGraph(this.housesPathsGraph);
+		this.indexDB.saveHousesGraph(this.pathsGraph);
 
 		this.pathLineFrom = null;
 		this.houseFrom = null;
@@ -156,13 +168,13 @@ export class PathPainter {
 		 * Почему не искать через `allHousesOnScene.find` по `house.id`?
 		 * - Потому что в кейсе, где мы имеем 100 домов, нам придется каждый раз перебирать массив из 100 эл-мов.
 		 * - - Сложность алгоритма в таком кейсе будет O(n) = O(100) */
-		const housesMap = new Map<string, HouseTableColumns>();
+		const housesMap = new Map<House["id"], IHouseTableCols>();
 		allHousesOnScene.forEach(house => housesMap.set(house.id, house));
 
 		if (!housesGraph) return;
 
-		this.housesPathsGraph = new Graph(housesGraph.map);
-		const graphNodesMap = this.housesPathsGraph.map;
+		this.pathsGraph = new Graph(housesGraph.map);
+		const graphNodesMap = this.pathsGraph.map;
 
 		const queue = [...graphNodesMap.values()];
 		const visitedNodes = new Set<string>();
@@ -184,11 +196,11 @@ export class PathPainter {
 
 				const pathLine = new PathLine();
 				pathLine.setFromTo(
-					[parentHouse.positionX, 0, parentHouse.positionZ],
-					[childHouse.positionX, 0, childHouse.positionZ]
+					[parentHouse.position.x, 0, parentHouse.position.z],
+					[childHouse.position.x, 0, childHouse.position.z]
 				);
 
-				this.pathLinesMap.setPathLine(parentHouse.id, childHouse.id, pathLine);
+				this.pathsMap.setPathLine(parentHouse.id, childHouse.id, pathLine);
 
 				this.sceneConnector.addMeshToScene?.(pathLine);
 			}

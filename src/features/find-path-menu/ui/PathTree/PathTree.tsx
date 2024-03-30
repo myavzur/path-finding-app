@@ -7,7 +7,7 @@ export const PathTree: React.FC<PathTreeProps> = ({ housesMap, path }) => {
 	const items = useMemo(() => {
 		return path.map(node => {
 			return {
-				title: housesMap.get(node.id)?.id
+				title: housesMap.get(node.id)?.address
 			};
 		});
 	}, [path]);

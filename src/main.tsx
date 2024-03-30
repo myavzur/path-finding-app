@@ -29,8 +29,8 @@ indexDB.onSuccessOpened = async () => {
 		<>
 			<HouseMenu scene={mainFlowScene} />
 			<FindPathMenu
-				database={indexDB}
 				pathPainter={mainFlowScene.pathPainter}
+				housePainter={mainFlowScene.housePainter}
 			/>
 		</>
 	);

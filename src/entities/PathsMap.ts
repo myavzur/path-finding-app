@@ -1,23 +1,23 @@
 import { PathLine } from "@/shared/PathLine";
 
-export class PathLinesMap {
-	private pathLinesMap = new Map<string, PathLine>();
+export class PathsMap {
+	private pathsMap = new Map<string, PathLine>();
 
 	setPathLine(houseIdFrom: string, houseIdTo: string, pathLine: PathLine) {
 		if (this.hasPathLine(houseIdFrom, houseIdTo)) return;
 
 		const fromToId = `${houseIdFrom}-${houseIdTo}`;
-		this.pathLinesMap.set(fromToId, pathLine);
+		this.pathsMap.set(fromToId, pathLine);
 	}
 
 	hasPathLine(houseIdFrom: string, houseIdTo: string) {
 		const { fromToId, toFromId } = this.getPathIds(houseIdFrom, houseIdTo);
-		return this.pathLinesMap.has(fromToId) || this.pathLinesMap.has(toFromId);
+		return this.pathsMap.has(fromToId) || this.pathsMap.has(toFromId);
 	}
 
 	getPathLine(houseIdFrom: string, houseIdTo: string) {
 		const { fromToId, toFromId } = this.getPathIds(houseIdFrom, houseIdTo);
-		return this.pathLinesMap.get(fromToId) || this.pathLinesMap.get(toFromId);
+		return this.pathsMap.get(fromToId) || this.pathsMap.get(toFromId);
 	}
 
 	private getPathIds(houseIdFrom: string, houseIdTo: string) {

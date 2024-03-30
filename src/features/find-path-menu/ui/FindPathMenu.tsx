@@ -8,40 +8,55 @@ import "./FindPathMenu.css";
 
 import cn from "classnames";
 import { PathTree } from "./PathTree";
+import { PathColor } from "@/shared/constants";
 
 export const FindPathMenu: React.FC<FindPathMenuProps> = ({
 	pathPainter,
-	database
+	housePainter
 }) => {
 	const [pathsMap, setPathsMap] = useState<Map<string, Node[]>>(new Map());
 	const [searchPathError, setSearchPathError] = useState("");
 	const [activePathId, setActivePathId] = useState("");
 	const [activePath, setActivePath] = useState<Node[]>([]);
 
-	if (!pathPainter) {
-		return <div>PathPainter is not ready or not defined!</div>;
+	if (!pathPainter || !housePainter) {
+		return <div>PathPainter or HousePainter is not ready or not defined!</div>;
 	}
 
-	console.debug(pathsMap, searchPathError, activePath, setActivePath, setActivePathId);
+	const setPathColor = (pathNodes: Node[], color: PathColor) => {
+		if (!pathPainter) return;
+
+		for (let i = 0; i < pathNodes.length - 1; i++) {
+			const currentNode = pathNodes[i];
+			const nextNode = pathNodes[i + 1];
+
+			pathPainter.highlightPath(currentNode.id, nextNode.id, color);
+		}
+	};
+
+	const handleHighlightPath = (pathNodes: Node[]) => {
+		setPathColor(activePath, PathColor.DEFAULT);
+		setPathColor(pathNodes, PathColor.ACTIVE);
+
+		setActivePathId(pathNodes.map(node => node.id).join());
+		setActivePath(pathNodes);
+	};
 
 	const handleSearchPath = async (values: { from: string; to: string }) => {
-		const housesPathsGraph = pathPainter.housesPathsGraph;
-		if (!housesPathsGraph) return;
+		const pathsGraph = pathPainter.pathsGraph;
+		const housesMap = housePainter.housesMap;
+		if (!pathsGraph || !housesMap) return;
 
-		console.log("handleSearchPath");
-		const allHousesInfo = await database.getAllHousesInfo();
+		const houses = [...housesMap.values()];
 
 		const { houseFromId, houseToId } = getHouseIdsByAddresses(
 			values.from,
 			values.to,
-			allHousesInfo
+			houses
 		);
 
-		console.log("fromHouseAddress", values.from, houseFromId);
-		console.log("toHouseAddress", values.to, houseToId);
-
-		const nodeFrom = housesPathsGraph.map.get(houseFromId);
-		const nodeTo = housesPathsGraph.map.get(houseToId);
+		const nodeFrom = pathsGraph.map.get(houseFromId);
+		const nodeTo = pathsGraph.map.get(houseToId);
 
 		const hasNodes = nodeFrom && nodeTo;
 		if (!hasNodes) {
@@ -49,16 +64,13 @@ export const FindPathMenu: React.FC<FindPathMenuProps> = ({
 			return;
 		}
 
-		const possiblePathsMatrix = housesPathsGraph.getAllPaths(nodeFrom, nodeTo);
+		const possiblePathsMatrix = pathsGraph.getAllPaths(nodeFrom, nodeTo);
 		if (possiblePathsMatrix.length === 0) {
 			setSearchPathError("Маршрут не найден");
 			return;
 		}
 
 		const pathsMap = convertPathMatrixToMap(possiblePathsMatrix);
-
-		console.log("possiblePathsMatrix :>> ", possiblePathsMatrix);
-		console.log("pathsMap :>> ", pathsMap);
 
 		setPathsMap(pathsMap);
 		setSearchPathError("");
@@ -67,7 +79,7 @@ export const FindPathMenu: React.FC<FindPathMenuProps> = ({
 	return (
 		<Card
 			rootClassName="find-path-container"
-			title="Найти маршрут"
+			title="Проложить маршрут"
 		>
 			<Form onFinish={handleSearchPath}>
 				<Flex
@@ -94,7 +106,7 @@ export const FindPathMenu: React.FC<FindPathMenuProps> = ({
 						htmlType="submit"
 						type="primary"
 					>
-						Найти
+						Вперёд
 					</Button>
 				</Flex>
 			</Form>
@@ -110,14 +122,14 @@ export const FindPathMenu: React.FC<FindPathMenuProps> = ({
 					{[...pathsMap.entries()].map(([pathId, path]) => (
 						<Alert
 							key={pathId}
-							onClick={() => null}
+							onClick={() => handleHighlightPath(path)}
 							className={cn("path-container", {
 								active: pathId === activePathId
 							})}
 							description={
 								<PathTree
 									path={path}
-									housesMap={pathPainter.housesPathsGraph.map}
+									housesMap={housePainter.housesMap}
 								/>
 							}
 						/>

@@ -12,7 +12,7 @@ export class MainFlowScene {
 	readonly raycaster: Raycaster = new Raycaster();
 
 	private sceneConnector = new SceneConnector();
-	private housePainter: HousePainter | null = null;
+	housePainter: HousePainter | null = null;
 	pathPainter: PathPainter | null = null;
 
 	constructor(actionScene: IActionScene, assetMap: Map<string, GLTF>) {
@@ -20,15 +20,26 @@ export class MainFlowScene {
 		this.assetMap = assetMap;
 
 		this.sceneConnector.getPointerPosition = this.getPointerPosition.bind(this);
-		this.sceneConnector.getIntersectWithGround = this.getIntersectWithGround.bind(this);
-		this.sceneConnector.getIntersectWithScene = this.getIntersectWithScene.bind(this);
+
+		this.sceneConnector.getIntersectWithGround =
+			this.getIntersectWithGround.bind(this);
+		this.sceneConnector.getIntersectWithScene =
+			this.getIntersectWithScene.bind(this);
+		this.sceneConnector.getIntersectWithSprite =
+			this.getIntersectWithSprite.bind(this);
+
 		this.sceneConnector.addMeshToScene = this.addMeshToScene.bind(this);
 		this.sceneConnector.removeMeshFromScene = this.removeMeshFromScene.bind(this);
+
+		this.sceneConnector.enableOrbitControls = this.enableOrbitControls.bind(this);
+		this.sceneConnector.disableOrbitControls = this.disableOrbitControls.bind(this);
 	}
 
 	async start() {
 		this.housePainter = new HousePainter(this.sceneConnector, this.assetMap);
 		this.pathPainter = new PathPainter(this.sceneConnector);
+
+		// this.sceneConnector.addMeshToScene?.(this.actionScene.axesHelper);
 	}
 
 	mountDraftHouseOnScene(assetTitle: AssetTitle) {
@@ -63,5 +74,20 @@ export class MainFlowScene {
 	private getIntersectWithScene(pointer: Vector2) {
 		this.raycaster.setFromCamera(pointer, this.actionScene.camera);
 		return this.raycaster.intersectObjects(this.actionScene.scene.children, true);
+	}
+
+	private getIntersectWithSprite(pointer: Vector2, sprite: Object3D | Mesh | Group) {
+		this.raycaster.setFromCamera(pointer, this.actionScene.camera);
+
+		const firstIntersection = this.raycaster.intersectObject(sprite, true)[0];
+		return firstIntersection;
+	}
+
+	private enableOrbitControls() {
+		this.actionScene.orbitControls.enabled = true;
+	}
+
+	private disableOrbitControls() {
+		this.actionScene.orbitControls.enabled = false;
 	}
 }

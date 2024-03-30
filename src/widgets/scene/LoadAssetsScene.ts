@@ -12,8 +12,6 @@ export class LoadAssetsScene {
 			const gltf = await this.loadModel(asset.path);
 			this.assetMap.set(asset.title, gltf);
 		}
-
-		console.log("this.assetMap :>> ", this.assetMap);
 	}
 
 	private async loadModel(path: string): Promise<GLTF> {

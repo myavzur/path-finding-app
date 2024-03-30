@@ -1,17 +1,16 @@
 import { House } from "@/shared/House";
-import { HouseTableColumns } from "../../../../../IndexDB";
 
 export const getHouseIdsByAddresses = (
 	houseAddressFrom: House["address"],
 	houseAddressTo: House["address"],
-	housesInfo: HouseTableColumns[]
+	houses: House[]
 ) => {
-	return housesInfo.reduce(
-		(ids, info) => {
-			const { id, houseAddress } = info;
+	return houses.reduce(
+		(ids, house) => {
+			const { id, address } = house;
 
-			const isHouseFrom = houseAddressFrom === houseAddress;
-			const isHouseTo = houseAddressTo === houseAddress;
+			const isHouseFrom = houseAddressFrom === address;
+			const isHouseTo = houseAddressTo === address;
 
 			if (isHouseFrom) {
 				ids.houseFromId = id;

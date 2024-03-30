@@ -1,9 +1,12 @@
-import { Graph } from "@/shared/Graph";
-import { IndexDB } from "../../../../IndexDB";
+import { HousePainter } from "@/features/HousePainter";
+import { PathPainter } from "@/features/PathPainter";
 
 export interface FindPathMenuProps {
-	pathPainter: {
-		housesPathsGraph: Graph;
+	housePainter: {
+		housesMap: HousePainter["housesMap"];
 	} | null;
-	database: IndexDB;
+	pathPainter: {
+		pathsGraph: PathPainter["pathsGraph"];
+		highlightPath: PathPainter["highlightPath"];
+	} | null;
 }

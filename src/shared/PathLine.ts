@@ -1,5 +1,6 @@
 import { Color } from "three";
 import { Line2, LineGeometry, LineMaterial } from "three/examples/jsm/Addons.js";
+import { PathColor } from "./constants";
 
 export class PathLine extends Line2 {
 	constructor(color?: number) {
@@ -8,7 +9,7 @@ export class PathLine extends Line2 {
 		lineGeometry.setColors([1, 1, 1, 1, 1, 1]);
 
 		const lineMaterial = new LineMaterial({
-			color: color || 0x635c5a,
+			color: color || PathColor.DEFAULT,
 			linewidth: 0.005,
 			vertexColors: true
 		});
