@@ -4,6 +4,6 @@ export enum PathColor {
 }
 
 export enum HousePositionControllerColor {
-	DEFAULT = 0x6794ab,
-	ACTIVE = 0xffe921
+	DEFAULT = 0x555555,
+	ACTIVE = 0x4096ff
 }

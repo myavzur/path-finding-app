@@ -3,6 +3,9 @@
   left: 20px;
   top: 100px;
   width: 340px;
+  user-select: none;
+  max-height: 80vh;
+  overflow-y: scroll;
 }
 
 .find-path-container .path-container {

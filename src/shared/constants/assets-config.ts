@@ -23,8 +23,8 @@ export const assetsConfig: IAssetConfig[] = [
 		defaultLabel: "Замок",
 		path: "/castle.glb",
 		positions: {
-			label: [-2, 21, 3],
-			controller: [0, 14, 0]
+			label: [-4, 17, 4],
+			controller: [-4, 25, 4]
 		}
 	},
 	{
@@ -41,8 +41,8 @@ export const assetsConfig: IAssetConfig[] = [
 		defaultLabel: "Лачуга",
 		path: "/shack.glb",
 		positions: {
-			label: [0, 12, 0],
-			controller: [0, 6, 0]
+			label: [0, 8, 0],
+			controller: [0, 15, 0]
 		}
 	},
 	{
@@ -50,8 +50,8 @@ export const assetsConfig: IAssetConfig[] = [
 		defaultLabel: "Изба",
 		path: "/woodhouse.glb",
 		positions: {
-			label: [0, 12, 0],
-			controller: [0, 5, 0]
+			label: [0, 8, 0],
+			controller: [0, 15, 0]
 		}
 	}
 ];

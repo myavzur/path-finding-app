@@ -3,6 +3,7 @@ import { Grid } from "@/shared/Grid";
 import { Ground, groundGeometryConfig } from "@/shared/Ground";
 import { HemiLight } from "@/shared/HemiLight";
 import { IActionScene } from "@/shared/interfaces";
+import debounce from "lodash.debounce";
 import { AxesHelper, Color, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { CSS2DRenderer, OrbitControls } from "three/examples/jsm/Addons.js";
 
@@ -20,6 +21,15 @@ export class InitScene implements IActionScene {
 	readonly orbitControls: OrbitControls;
 	readonly axesHelper: AxesHelper;
 
+	onChangeCamera = debounce(() => {
+		localStorage.setItem(
+			"camera",
+			JSON.stringify({
+				position: this.camera.position
+			})
+		);
+	}, 100);
+
 	constructor() {
 		this.scene = new Scene();
 		this.scene.background = new Color(0xffffff);
@@ -35,10 +45,10 @@ export class InitScene implements IActionScene {
 		this.scene.add(new DirectLight());
 		this.scene.add(new HemiLight());
 
-		// Scene - Camera
+		// Camera
 		const aspect = window.innerWidth / window.innerHeight;
 		this.camera = new PerspectiveCamera(45, aspect, 0.1, 500);
-		this.camera.position.set(-11.3, 50, 200);
+		this.camera.position.set(...this.getSafeCameraPosition());
 
 		// Renderer - WebGL
 		this.renderer = new WebGLRenderer({ alpha: true });
@@ -53,6 +63,7 @@ export class InitScene implements IActionScene {
 		// Orbit Controls
 		this.orbitControls = new OrbitControls(this.camera, this.renderer2D.domElement);
 		this.orbitControls.maxPolarAngle = Math.PI / 2;
+		this.orbitControls.addEventListener("change", this.onChangeCamera);
 
 		// Axes Helper
 		this.axesHelper = new AxesHelper(groundGeometryConfig.width / 2);
@@ -74,6 +85,14 @@ export class InitScene implements IActionScene {
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 		this.renderer2D.setSize(window.innerWidth, window.innerHeight);
 	};
+
+	private getSafeCameraPosition(): [number, number, number] {
+		const cameraData = localStorage.getItem("camera");
+		if (!cameraData)
+			return [11.355728920849053, 50.57971647550468, 100.31142433676645];
+		const position = JSON.parse(cameraData).position;
+		return [position.x, position.y, position.z];
+	}
 
 	async start() {
 		this.animate();

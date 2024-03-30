@@ -172,18 +172,15 @@ export class HousePainter {
 		const house = this.createHouseByAssetTitle(assetTitle);
 		if (!house) return;
 
-		house.setOpacity(0.5);
-
 		house.address = await this.getUniqueAddress(house.assetConfig.defaultLabel); // Устанавливаем значение по умолчанию.
-
 		house.onSaveHouse = this.handleSaveHouse;
 
-		this.draftHouse = house;
-
+		house.setOpacity(0.5);
+		house.createHousePositionController();
+		house.createHouseLabel(house.address);
 		this.sceneConnector.addMeshToScene?.(house.mesh);
 
-		house.createHouseLabel(house.address);
-		house.createHousePositionController();
+		this.draftHouse = house;
 
 		window.addEventListener("keydown", this.handleWindowKeyDown);
 	};

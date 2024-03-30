@@ -8,23 +8,25 @@ import { LoadAssetsScene } from "./widgets/scene/LoadAssetsScene";
 import { MainFlowScene } from "./widgets/scene/MainFlowScene";
 import { IndexDB } from "../IndexDB";
 import { FindPathMenu } from "./features/find-path-menu";
+import { AssetsLoader } from "./shared/AssetsLoader";
 
 const indexDB = new IndexDB();
 
 indexDB.onSuccessOpened = async () => {
-	const scene = new InitScene();
-	scene.start();
-
-	// @ts-expect-error - Just for debug. No errors. Just to shut typescript for a moment
-	window.scene = scene;
+	const root = createRoot(document.getElementById("root")!);
 
 	const assetScene = new LoadAssetsScene();
+	assetScene.onAssetsLoading = percent => {
+		root.render(<AssetsLoader percent={percent} />);
+	};
 	await assetScene.start(); // Дожидаемся загрузки асетов
+
+	const scene = new InitScene();
+	scene.start();
 
 	const mainFlowScene = new MainFlowScene(scene, assetScene.assetMap);
 	mainFlowScene.start();
 
-	const root = createRoot(document.getElementById("root")!);
 	root.render(
 		<>
 			<HouseMenu scene={mainFlowScene} />

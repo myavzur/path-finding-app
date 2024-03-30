@@ -25,7 +25,7 @@ export class IndexDB {
 	static _INSTANCE: IndexDB | null = null;
 
 	private DATABASE_NAME = "houses_map";
-	private VERSION = 7.1;
+	private VERSION = 7.3;
 
 	private openRequest!: IDBOpenDBRequest;
 	private database: IDBDatabase | null = null;
@@ -69,7 +69,7 @@ export class IndexDB {
 
 		const transaction = this.database.transaction(HOUSES_TABLE_NAME, "readwrite");
 		const housesStore = transaction.objectStore(HOUSES_TABLE_NAME);
-		housesStore.add(house, house.id);
+		housesStore.add(house);
 	}
 
 	getAllHousesInfo(): Promise<IHouseTableCols[]> {
