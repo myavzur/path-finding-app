@@ -7,8 +7,6 @@ import { House } from "../House";
 import { IndexDB } from "../../../IndexDB";
 import { useDebouncedFunction } from "../hooks";
 
-import cn from "classnames";
-
 export const HouseLabel: React.FC<HouseLabelProps> = ({
 	defaultAddress = "",
 	isMounted: defaultMounted = false,
@@ -74,21 +72,22 @@ export const HouseLabel: React.FC<HouseLabelProps> = ({
 				rules={[{ required: true }]}
 			>
 				<Input
-					disabled={isMounted}
-					className={cn("input-house-address")}
+					className={"input-house-address"}
 					placeholder="Адрес"
 					value={address}
 					status={error ? "error" : ""}
 					onChange={handleChangeAddress}
-					suffix={isLoading ? <Spin size="small" /> : null}
+					suffix={isLoading ? <Spin size="small" /> : <></>}
 				/>
 				{error && <div className="ant-form-item-explain-error">{error}</div>}
 			</Form.Item>
 
 			<Button
+				block={true}
 				disabled={isLoading || Boolean(error)}
 				htmlType="submit"
 				onPointerDown={handleSaveHouse}
+				type="primary"
 			>
 				Сохранить
 			</Button>

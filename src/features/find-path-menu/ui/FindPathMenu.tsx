@@ -81,7 +81,10 @@ export const FindPathMenu: React.FC<FindPathMenuProps> = ({
 			rootClassName="find-path-container"
 			title="Проложить маршрут"
 		>
-			<Form onFinish={handleSearchPath}>
+			<Form
+				onFinish={handleSearchPath}
+				rootClassName="find-path-form"
+			>
 				<Flex
 					gap="middle"
 					vertical={true}

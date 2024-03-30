@@ -8,6 +8,14 @@
   overflow-y: scroll;
 }
 
+.find-path-container::-webkit-scrollbar {
+  width: 3px;
+}
+.find-path-container::-webkit-scrollbar-thumb {
+  border: 4px solid transparent;
+  background-color: rgba(0, 0, 0, .1);
+}
+
 .find-path-container .path-container {
   background-color: inherit;
   margin-top: 20px;
