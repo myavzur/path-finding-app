@@ -53,7 +53,7 @@ export const HouseLabel: React.FC<HouseLabelProps> = ({
 	const handleChangeAddress = (e: ChangeEvent<HTMLInputElement>) => {
 		setLoading(true);
 
-		const address = e.target.value.trim();
+		const address = e.target.value;
 
 		setAddress(address);
 		checkIsAddressUnique(address);
