@@ -10,6 +10,7 @@ export const PathTree: React.FC<PathTreeProps> = ({ housesMap, path }) => {
 				title: housesMap.get(node.id)?.address
 			};
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [path]);
 
 	return (
